@@ -29,22 +29,29 @@ app.get('/.netlify/functions/socket-server', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Handle socket.io requests
-app.use((req, res, next) => {
-  if (req.url.startsWith('/socket.io')) {
-    res.writeHead(200, {
-      'Content-Type': 'text/plain',
-      'Content-Length': '2',
-    });
-    res.write('OK');
-    res.end();
-  } else {
-    next();
-  }
-});
+// Better handling for socket.io requests
+const handler = serverless(app);
 
-// Export the serverless function
-exports.handler = serverless(app);
+exports.handler = async (event, context) => {
+  // For websocket support with Netlify functions
+  if (event.httpMethod === 'GET' && event.queryStringParameters?.EIO) {
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'text/plain',
+        'Connection': 'keep-alive',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      },
+      body: 'OK'
+    };
+  }
+  
+  // For all other requests, use standard serverless handler
+  return handler(event, context);
+};
 
 // Also export the raw HTTP server to allow direct access if needed
 exports.rawServer = httpServer;

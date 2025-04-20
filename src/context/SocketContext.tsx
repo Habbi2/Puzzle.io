@@ -5,8 +5,11 @@ import { GameState, ChatMessage } from '../types/game';
 // Determine the correct server URL based on environment
 const isProduction = process.env.NODE_ENV === 'production';
 const API_URL = isProduction
-  ? 'https://iopuzzle.netlify.app/.netlify/functions/socket-server' // Adjust URL to point to the function endpoint
+  ? 'https://iopuzzle.netlify.app' // Base URL without the function path
   : process.env.REACT_APP_API_URL || 'http://localhost:3001'; // Local development fallback
+
+// For Netlify serverless functions
+const API_PATH = isProduction ? '/.netlify/functions/socket-server' : undefined;
 
 // The path to the serverless function
 const SOCKET_PATH = isProduction ? '/socket.io' : undefined; // Update to match the path set in socket-server.js
@@ -73,7 +76,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       transports: ['websocket', 'polling'], // Explicitly define transport methods
-      path: SOCKET_PATH, // Use the standard socket.io path
+      path: API_PATH, // Use the standard socket.io path
       autoConnect: true,
     });
     
