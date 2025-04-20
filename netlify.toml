@@ -24,6 +24,11 @@
 
 [functions]
   node_bundler = "esbuild"
+  # Set maximum function execution time to 10 seconds (the maximum on Netlify)
+  included_files = ["server/dist/**"]
+  # Configure socket-server function specifically
+  [functions."socket-server"]
+    timeout = 10
   
 [dev]
   framework = "#custom"

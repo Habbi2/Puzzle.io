@@ -72,12 +72,21 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       reconnectionAttempts: maxReconnectAttempts,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
-      transports: ['websocket', 'polling'], // Explicitly define transport methods
-      path: API_PATH, // Use the standard socket.io path
+      transports: ['polling', 'websocket'], // Use polling first, since WebSockets aren't supported on Netlify Functions
+      path: API_PATH,
       autoConnect: true,
+      // Increase timeout for long-polling
+      timeout: 10000,
+      // Configure polling settings through transportOptions
+      transportOptions: {
+        polling: {
+          extraHeaders: {},
+          interval: 5000
+        }
+      }
     });
     
-    console.log('Initializing socket connection to:', serverUrl);
+    console.log('Initializing socket connection to:', serverUrl, 'using primarily polling transport');
     
     newSocket.on('connect', () => {
       console.log('Connected to WebSocket server');
