@@ -11,8 +11,7 @@ const API_URL = isProduction
 // For Netlify serverless functions
 const API_PATH = isProduction ? '/.netlify/functions/socket-server' : undefined;
 
-// The path to the serverless function
-const SOCKET_PATH = isProduction ? '/socket.io' : undefined; // Update to match the path set in socket-server.js
+// The unused SOCKET_PATH declaration has been removed
 
 interface SocketContextType {
   socket: Socket | null;
