@@ -18,6 +18,7 @@ interface SocketContextType {
   connected: boolean;
   currentGameId: string | null;
   isImageSyncing: boolean;
+  connectionStatus: { connected: boolean, reconnecting: boolean, attemptCount: number };
 }
 
 const defaultContext: SocketContextType = {
@@ -33,6 +34,7 @@ const defaultContext: SocketContextType = {
   connected: false,
   currentGameId: null,
   isImageSyncing: false,
+  connectionStatus: { connected: false, reconnecting: false, attemptCount: 0 }
 };
 
 const SocketContext = createContext<SocketContextType>(defaultContext);
@@ -208,7 +210,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
         updateDifficulty,
         connected,
         currentGameId,
-        isImageSyncing
+        isImageSyncing,
+        connectionStatus: {
+          connected,
+          reconnecting: reconnectAttempts > 0,
+          attemptCount: reconnectAttempts
+        }
       }}
     >
       {children}
