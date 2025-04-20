@@ -4,10 +4,10 @@ import { GameState, ChatMessage } from '../types/game';
 
 // Determine the correct server URL based on environment
 const isProduction = process.env.NODE_ENV === 'production';
-// In production, we connect to the Netlify Functions endpoint
-// In development, we connect to the local server
+// In production, connect to the Render-hosted server
+// In development, connect to the local server
 const API_URL = isProduction
-  ? window.location.origin // Use current domain in production
+  ? process.env.REACT_APP_SERVER_URL || 'https://puzzle-game-server.onrender.com' // Update with your Render URL
   : process.env.REACT_APP_API_URL || 'http://localhost:3001'; // Local development fallback
 
 // The path to the serverless function in production

@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: puzzle-game-server
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: node dist/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CLIENT_URL
+        value: https://your-frontend-url.netlify.app # Update this with your actual frontend URL
+    headers:
+      - path: /*
+        name: Access-Control-Allow-Origin
+        value: "*"
+      - path: /*
+        name: Access-Control-Allow-Methods
+        value: "GET, POST, OPTIONS"
+      - path: /*
+        name: Access-Control-Allow-Headers
+        value: "Origin, X-Requested-With, Content-Type, Accept"
