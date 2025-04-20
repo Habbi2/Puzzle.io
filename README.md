@@ -1,46 +1,96 @@
-# Getting Started with Create React App
+# Multiplayer Puzzle Reordering Game
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A real-time multiplayer puzzle reordering game built with React, TypeScript, and Socket.IO. Players can join game rooms, collaborate to solve puzzles by reordering pieces, and chat with each other.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Real-time multiplayer functionality using WebSockets (Socket.IO)
+- Interactive drag-and-drop puzzle pieces
+- Game rooms that allow multiple players to join and play together
+- Real-time chat functionality for players in the same room
+- Visual feedback when puzzle pieces are placed correctly
+- Celebration when the puzzle is solved
 
-### `npm start`
+## Technology Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **Frontend**: React, TypeScript, Styled Components, React DnD (drag and drop)
+- **Backend**: Node.js, Express, Socket.IO
+- **Deployment**: Netlify (frontend), Heroku/Render/Railway (backend)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Running Locally
 
-### `npm test`
+### Running the Server
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Navigate to the server directory:
+   ```
+   cd server
+   ```
 
-### `npm run build`
+2. Install dependencies (if not already done):
+   ```
+   npm install
+   ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. Start the server in development mode:
+   ```
+   npm run dev
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The WebSocket server will start on port 3001 by default.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Running the Client
 
-### `npm run eject`
+1. Open a new terminal and navigate to the project root directory.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+2. Start the React development server:
+   ```
+   npm start
+   ```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+3. Open your browser to `http://localhost:3000` to access the application.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## How to Play
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+1. Enter your name and a game ID on the lobby screen.
+2. Share the game ID with friends so they can join the same game.
+3. Drag and drop the puzzle pieces to rearrange them.
+4. The pieces will turn green when placed in their correct positions.
+5. Complete the puzzle by arranging all pieces correctly!
 
-## Learn More
+## Deployment
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Deploying the Backend
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+For the backend Socket.IO server, you can deploy to platforms like Heroku, Render, or Railway:
+
+1. Create an account on your preferred platform
+2. Connect your GitHub repository
+3. Set up a new app from the server directory
+4. Deploy the server
+
+### Deploying to Netlify
+
+The frontend is configured for easy deployment to Netlify:
+
+1. Sign in to Netlify
+2. Click "New site from Git"
+3. Connect to your GitHub repository
+4. Use the following settings:
+   - Build command: `npm run build`
+   - Publish directory: `build`
+5. Click "Deploy site"
+
+**Important:** After deploying the backend, update the server URL in the frontend:
+
+1. Navigate to `src/context/SocketContext.tsx`
+2. Find the line where the `serverUrl` default is set
+3. Replace the default with your deployed backend URL
+4. Redeploy the frontend
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License.
