@@ -24,8 +24,10 @@ Use the following settings:
 - **Environment**: Node
 - **Region**: Choose the one closest to your target audience
 - **Branch**: main (or your default branch)
-- **Build Command**: `cd server && npm install && npm run build`
-- **Start Command**: `cd server && node dist/server.js`
+- **Build Command**: `npm install --include=dev && npm run build`
+- **Start Command**: `node dist/server.js`
+
+> **Important**: Make sure to include the `--include=dev` flag in the npm install command to install TypeScript type definitions required for building.
 
 ### 3. Set Environment Variables
 
@@ -57,6 +59,7 @@ REACT_APP_SERVER_URL=https://your-app-name.onrender.com
 - **Connection Issues**: Check CORS settings in server.ts
 - **Server Errors**: Check Render logs in the dashboard
 - **Frontend Not Connecting**: Verify the correct URL is set in SocketContext.tsx
+- **TypeScript Build Errors**: Ensure dev dependencies are installed during build with `--include=dev` flag
 
 ## Notes
 

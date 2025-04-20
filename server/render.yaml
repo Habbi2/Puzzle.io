@@ -2,7 +2,7 @@ services:
   - type: web
     name: puzzle-game-server
     env: node
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: node dist/server.js
     envVars:
       - key: NODE_ENV
@@ -10,7 +10,7 @@ services:
       - key: PORT
         value: 10000
       - key: CLIENT_URL
-        value: https://your-frontend-url.netlify.app # Update this with your actual frontend URL
+        value: https://iopuzzle.netlify.app/ # Update this with your actual frontend URL
     headers:
       - path: /*
         name: Access-Control-Allow-Origin
