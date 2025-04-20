@@ -69,8 +69,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       reconnectionAttempts: maxReconnectAttempts,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
-      path: isProduction ? '/socket.io' : undefined, // Use the standard socket.io path in production
+      transports: ['websocket', 'polling'], // Explicitly define transport methods
+      path: isProduction ? '/socket.io' : undefined, // Use the standard socket.io path
+      autoConnect: true,
     });
+    
+    console.log('Initializing socket connection to:', serverUrl);
     
     newSocket.on('connect', () => {
       console.log('Connected to WebSocket server');
@@ -84,6 +88,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
         const username = localStorage.getItem('puzzleGameUsername') || 'Reconnected User';
         newSocket.emit('join_game', { gameId: currentGameId, username });
       }
+    });
+    
+    newSocket.on('connect_error', (error) => {
+      console.error('Connection error:', error);
     });
     
     newSocket.on('disconnect', () => {

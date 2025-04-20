@@ -9,6 +9,13 @@
   to = "/index.html"
   status = 200
 
+# Enable socket.io websocket connections
+[[redirects]]
+  from = "/socket.io/*"
+  to = "/.netlify/functions/socket-server/:splat"
+  status = 200
+  force = true
+
 # Proxy API requests to serverless functions
 [[redirects]]
   from = "/api/*"
@@ -17,3 +24,10 @@
 
 [functions]
   node_bundler = "esbuild"
+  
+[dev]
+  framework = "#custom"
+  command = "npm start"
+  port = 3000
+  targetPort = 3000
+  publish = "build"

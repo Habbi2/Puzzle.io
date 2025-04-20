@@ -14,6 +14,7 @@ const io = new Server(httpServer, {
     origin: "*", // Allow all origins in serverless environment
     methods: ["GET", "POST"]
   },
+  transports: ['websocket', 'polling'], // Ensure both transports are available
   path: "/socket.io" // Standard path for socket.io
 });
 
