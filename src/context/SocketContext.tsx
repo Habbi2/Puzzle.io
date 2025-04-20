@@ -4,8 +4,10 @@ import { GameState, ChatMessage } from '../types/game';
 
 // Determine the correct server URL based on environment
 const isProduction = process.env.NODE_ENV === 'production';
+// In production, we connect directly to the root domain since Netlify handles routing
+// In development, we connect to the local server
 const API_URL = isProduction
-  ? 'https://iopuzzle.netlify.app' // Base URL without the function path
+  ? '' // Empty string means connect to current host
   : process.env.REACT_APP_API_URL || 'http://localhost:3001'; // Local development fallback
 
 // For Netlify serverless functions
@@ -72,21 +74,20 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       reconnectionAttempts: maxReconnectAttempts,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
-      transports: ['polling', 'websocket'], // Use polling first, since WebSockets aren't supported on Netlify Functions
+      transports: ['polling', 'websocket'], // Prioritize polling for Netlify Functions
       path: API_PATH,
       autoConnect: true,
-      // Increase timeout for long-polling
-      timeout: 10000,
-      // Configure polling settings through transportOptions
+      forceNew: true, // Force a new connection
+      multiplex: false, // Disable multiplexing for cleaner connections
+      timeout: 20000, // Extended timeout
       transportOptions: {
         polling: {
           extraHeaders: {},
-          interval: 5000
         }
       }
     });
     
-    console.log('Initializing socket connection to:', serverUrl, 'using primarily polling transport');
+    console.log('Initializing socket connection to:', serverUrl || window.location.origin, 'with path:', API_PATH);
     
     newSocket.on('connect', () => {
       console.log('Connected to WebSocket server');
