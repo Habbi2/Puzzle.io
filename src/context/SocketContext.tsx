@@ -2,8 +2,11 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { GameState, ChatMessage } from '../types/game';
 
-// Use environment variable for server URL with localhost fallback
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+// Determine the correct server URL based on environment
+const isProduction = process.env.NODE_ENV === 'production';
+const API_URL = isProduction
+  ? '/.netlify/functions/socket-server' // Path to the serverless function in production
+  : process.env.REACT_APP_API_URL || 'http://localhost:3001'; // Local development fallback
 
 interface SocketContextType {
   socket: Socket | null;
@@ -66,6 +69,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       reconnectionAttempts: maxReconnectAttempts,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
+      path: isProduction ? '/socket.io' : undefined, // Use the standard socket.io path in production
     });
     
     newSocket.on('connect', () => {

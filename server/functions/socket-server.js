@@ -11,10 +11,10 @@ const httpServer = createServer(app);
 // Configure Socket.IO
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || "https://react-multiplayer-puzzle-game.netlify.app",
+    origin: "*", // Allow all origins in serverless environment
     methods: ["GET", "POST"]
   },
-  path: "/.netlify/functions/socket-server"
+  path: "/socket.io" // Standard path for socket.io
 });
 
 // We'll import our game logic here
@@ -22,6 +22,25 @@ const { setupSocketHandlers } = require('../dist/socketHandlers');
 
 // Setup Socket.IO handlers
 setupSocketHandlers(io);
+
+// Add health check endpoint
+app.get('/.netlify/functions/socket-server', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Handle socket.io requests
+app.use((req, res, next) => {
+  if (req.url.startsWith('/socket.io')) {
+    res.writeHead(200, {
+      'Content-Type': 'text/plain',
+      'Content-Length': '2',
+    });
+    res.write('OK');
+    res.end();
+  } else {
+    next();
+  }
+});
 
 // Export the serverless function
 exports.handler = serverless(app);
