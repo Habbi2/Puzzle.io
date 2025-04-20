@@ -9,9 +9,7 @@ const API_URL = isProduction
   : process.env.REACT_APP_API_URL || 'http://localhost:3001'; // Local development fallback
 
 // For Netlify serverless functions
-const API_PATH = isProduction ? '/.netlify/functions/socket-server' : undefined;
-
-// The unused SOCKET_PATH declaration has been removed
+const API_PATH = isProduction ? '/socket.io' : undefined;
 
 interface SocketContextType {
   socket: Socket | null;
@@ -75,11 +73,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       transports: ['websocket', 'polling'], // Explicitly define transport methods
-      path: API_PATH, // Use the standard socket.io path
+      path: API_PATH, // This is the path to the serverless function
       autoConnect: true,
     });
     
-    console.log('Initializing socket connection to:', serverUrl);
+    console.log('Initializing socket connection to:', serverUrl, 'with path:', API_PATH);
     
     newSocket.on('connect', () => {
       console.log('Connected to WebSocket server');

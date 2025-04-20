@@ -33,7 +33,27 @@ app.get('/.netlify/functions/socket-server', (req, res) => {
 const handler = serverless(app);
 
 exports.handler = async (event, context) => {
-  // For websocket support with Netlify functions
+  // Special handling for WebSocket connections
+  if (event.headers && 
+     (event.headers['Upgrade'] === 'websocket' || 
+      event.headers['upgrade'] === 'websocket' || 
+      event.headers['Sec-WebSocket-Key'])) {
+    return {
+      statusCode: 426,
+      headers: {
+        'Content-Type': 'text/plain',
+        'Connection': 'Upgrade',
+        'Upgrade': 'websocket',
+        'Sec-WebSocket-Accept': 'HSmrc0sMlYUkAGmm5OPpG2HaGWk=',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      },
+      body: 'Upgrade Required'
+    };
+  }
+  
+  // For socket.io polling requests
   if (event.httpMethod === 'GET' && event.queryStringParameters?.EIO) {
     return {
       statusCode: 200,
@@ -46,6 +66,20 @@ exports.handler = async (event, context) => {
         'Access-Control-Allow-Headers': 'Content-Type'
       },
       body: 'OK'
+    };
+  }
+  
+  // Handle OPTIONS for CORS preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Max-Age': '86400'
+      },
+      body: ''
     };
   }
   
