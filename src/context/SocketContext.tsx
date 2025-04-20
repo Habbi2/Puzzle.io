@@ -4,14 +4,14 @@ import { GameState, ChatMessage } from '../types/game';
 
 // Determine the correct server URL based on environment
 const isProduction = process.env.NODE_ENV === 'production';
-// In production, we connect directly to the root domain since Netlify handles routing
+// In production, we connect to the Netlify Functions endpoint
 // In development, we connect to the local server
 const API_URL = isProduction
-  ? '' // Empty string means connect to current host
+  ? window.location.origin // Use current domain in production
   : process.env.REACT_APP_API_URL || 'http://localhost:3001'; // Local development fallback
 
-// For Netlify serverless functions
-const API_PATH = isProduction ? '/.netlify/functions/socket-server' : undefined;
+// The path to the serverless function in production
+const API_PATH = isProduction ? '/.netlify/functions/socket-server' : '';
 
 interface SocketContextType {
   socket: Socket | null;
@@ -74,20 +74,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       reconnectionAttempts: maxReconnectAttempts,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
-      transports: ['polling', 'websocket'], // Prioritize polling for Netlify Functions
-      path: API_PATH,
+      transports: ['websocket', 'polling'], // Try websocket first, fallback to polling
+      path: API_PATH || undefined, // Only set path in production
       autoConnect: true,
-      forceNew: true, // Force a new connection
-      multiplex: false, // Disable multiplexing for cleaner connections
-      timeout: 20000, // Extended timeout
-      transportOptions: {
-        polling: {
-          extraHeaders: {},
-        }
-      }
+      forceNew: true,
+      timeout: 20000
     });
     
-    console.log('Initializing socket connection to:', serverUrl || window.location.origin, 'with path:', API_PATH);
+    console.log('Initializing socket connection to:', serverUrl, 'with path:', API_PATH || 'default');
     
     newSocket.on('connect', () => {
       console.log('Connected to WebSocket server');
