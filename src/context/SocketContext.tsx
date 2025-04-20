@@ -10,8 +10,9 @@ const API_URL = isProduction
   ? process.env.REACT_APP_SERVER_URL || 'https://puzzle-game-server.onrender.com' // Update with your Render URL
   : process.env.REACT_APP_API_URL || 'http://localhost:3001'; // Local development fallback
 
-// The path to the serverless function in production
-const API_PATH = isProduction ? '/.netlify/functions/socket-server' : '';
+// Only use function path for Netlify deployment, not for Render deployment
+const isNetlify = API_URL.includes('netlify'); 
+const API_PATH = isNetlify ? '/.netlify/functions/socket-server' : '';
 
 interface SocketContextType {
   socket: Socket | null;

@@ -24,10 +24,10 @@ Use the following settings:
 - **Environment**: Node
 - **Region**: Choose the one closest to your target audience
 - **Branch**: main (or your default branch)
-- **Build Command**: `npm install --include=dev && npm run build`
+- **Build Command**: `npm install --production=false && npm run build`
 - **Start Command**: `node dist/server.js`
 
-> **Important**: Make sure to include the `--include=dev` flag in the npm install command to install TypeScript type definitions required for building.
+> **Important**: Use the `--production=false` flag in the npm install command to ensure TypeScript type definitions and other dev dependencies required for building are installed.
 
 ### 3. Set Environment Variables
 
