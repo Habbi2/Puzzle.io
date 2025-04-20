@@ -5,11 +5,11 @@ import { GameState, ChatMessage } from '../types/game';
 // Determine the correct server URL based on environment
 const isProduction = process.env.NODE_ENV === 'production';
 const API_URL = isProduction
-  ? 'https://iopuzzle.netlify.app' // Use the root domain for Netlify in production
+  ? 'https://iopuzzle.netlify.app/.netlify/functions/socket-server' // Adjust URL to point to the function endpoint
   : process.env.REACT_APP_API_URL || 'http://localhost:3001'; // Local development fallback
 
 // The path to the serverless function
-const SOCKET_PATH = isProduction ? '/.netlify/functions/socket-server/socket.io' : undefined;
+const SOCKET_PATH = isProduction ? '/socket.io' : undefined; // Update to match the path set in socket-server.js
 
 interface SocketContextType {
   socket: Socket | null;
