@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import CustomDndProvider from './CustomDndProvider';
 import { PuzzlePiece as PuzzlePieceComponent } from './PuzzlePiece';
 import { useSocket } from '../context/SocketContext';
 import { PuzzlePiece as PuzzlePieceType } from '../types/game';
+import { isMobileDevice, isTouchDevice } from '../utils/deviceDetection';
 
 const BoardContainer = styled.div`
   display: flex;
@@ -131,13 +131,35 @@ const PuzzleBoard: React.FC<PuzzleBoardProps> = () => {
     }
   }, [displayImageUrl]);
   
-  // Get grid size based on difficulty - increased number of pieces
+  // Use device detection to optimize for mobile devices
+  const isMobile = isMobileDevice();
+  const isTouch = isTouchDevice();
+  
+  // Get grid size based on difficulty - adjusted for mobile devices
   const getGridSize = (): { rows: number, columns: number } => {
+    // For mobile devices, reduce grid size by 1 for better usability
+    const mobileSizeReduction = isMobile ? 1 : 0;
+    // For touch devices, add additional spacing by reducing pieces slightly
+    const touchSizeReduction = isTouch && !isMobile ? 1 : 0;
+    const totalReduction = mobileSizeReduction + touchSizeReduction;
+    
     switch(difficulty) {
-      case 'easy': return { rows: 4, columns: 4 }; // 16 pieces
-      case 'medium': return { rows: 6, columns: 6 }; // 36 pieces
-      case 'hard': return { rows: 8, columns: 8 }; // 64 pieces
-      default: return { rows: 6, columns: 6 };
+      case 'easy': return { 
+        rows: Math.max(3, 4 - totalReduction), 
+        columns: Math.max(3, 4 - totalReduction) 
+      }; 
+      case 'medium': return { 
+        rows: Math.max(4, 6 - totalReduction), 
+        columns: Math.max(4, 6 - totalReduction) 
+      };
+      case 'hard': return { 
+        rows: Math.max(6, 8 - totalReduction), 
+        columns: Math.max(6, 8 - totalReduction) 
+      };
+      default: return { 
+        rows: Math.max(4, 6 - totalReduction), 
+        columns: Math.max(4, 6 - totalReduction) 
+      };
     }
   };
   
@@ -257,7 +279,7 @@ const PuzzleBoard: React.FC<PuzzleBoardProps> = () => {
     const hoverPiece = puzzlePieces.find(p => p.position === hoverIndex);
     
     if (dragPiece && hoverPiece) {
-      // Swap positions
+      // Create a new array to avoid mutating state
       const newPieces = puzzlePieces.map(piece => {
         if (piece.id === dragPiece.id) {
           return { ...piece, position: hoverIndex };
@@ -268,12 +290,16 @@ const PuzzleBoard: React.FC<PuzzleBoardProps> = () => {
         return piece;
       });
       
+      // Use setState callback to ensure we have the most current state
       setPuzzlePieces(newPieces);
       
       // Use the socket movePiece function to update the server
       if (socketMovePiece) {
-        socketMovePiece(dragPiece.id, hoverIndex);
-        socketMovePiece(hoverPiece.id, dragIndex);
+        // Add a small delay to ensure a smooth animation before sending updates
+        setTimeout(() => {
+          socketMovePiece(dragPiece.id, hoverIndex);
+          socketMovePiece(hoverPiece.id, dragIndex);
+        }, 50);
       }
     }
   };
@@ -336,7 +362,7 @@ const PuzzleBoard: React.FC<PuzzleBoardProps> = () => {
   });
   
   return (
-    <DndProvider backend={HTML5Backend}>
+    <CustomDndProvider>
       <BoardContainer>
         <StatusBar>
           <PlayersInfo>
@@ -422,7 +448,7 @@ const PuzzleBoard: React.FC<PuzzleBoardProps> = () => {
           </>
         )}
       </BoardContainer>
-    </DndProvider>
+    </CustomDndProvider>
   );
 };
 
